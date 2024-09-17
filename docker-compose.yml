@@ -1,0 +1,75 @@
+version: "3.5"
+services:
+  nginx:
+    container_name: laravel-app-nginx
+    image: webdevops/nginx
+    hostname: nginx
+    volumes:
+      - ./:/var/www
+      - ./docker/etc/nginx/:/etc/nginx/conf.d/
+      - ./docker/logs:/var/log/nginx
+    depends_on:
+      - laravel-app
+      - mysql
+    networks:
+      internal:
+        ipv4_address: 172.25.248.3
+  laravel-app:
+    container_name: laravel-app-backend
+    build:
+        context: ./docker/build/php
+    restart: unless-stopped
+    tty: true
+    environment:
+      PHP_XDEBUG_ENABLE: 1
+      PHP_XDEBUG_REMOTE_PORT: 9003
+      PHP_XDEBUG_REMOTE_HOST: 172.25.248.1
+      PHP_IDE_CONFIG: "serverName=laravel-app"
+    working_dir: /var/www
+    volumes:
+      - .:/var/www
+      - ./docker/etc/php:/usr/local/etc/php/conf.d
+    networks:
+      internal:
+        ipv4_address: 172.25.248.10
+  mysql:
+    container_name: laravel-app-mysql
+    image: mysql:5.7
+    hostname: mysql
+    volumes:
+      - ./docker/data/mysql/:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: example_db
+      MYSQL_USER: example_dbu
+      MYSQL_PASSWORD: 5DW0tECM
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_unicode_ci
+    networks:
+      internal:
+        ipv4_address: 172.25.248.5
+  phpmyadmin:
+    container_name: laravel-app-phpmyadmin
+    depends_on:
+      - mysql
+    image: phpmyadmin/phpmyadmin
+    links:
+      - mysql:mysql
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: root
+      PMA_USER: example_dbu
+      PMA_PASSWORD: 5DW0tECM
+      UPLOAD_LIMIT: 300M
+    networks:
+      internal:
+        ipv4_address: 172.25.248.7
+
+networks:
+  internal:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.25.248.0/28
+

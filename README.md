@@ -16,7 +16,8 @@
 7. php artisan migrate
 8. php artisan db:seed
 9. php artisan test
-10. Приложение доступно на http://172.25.248.3/
+10. php artisan key:generate
+11. Приложение доступно на http://172.25.248.3/
 
 ## API
 

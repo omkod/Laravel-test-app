@@ -21,9 +21,7 @@ services:
     restart: unless-stopped
     tty: true
     environment:
-      PHP_XDEBUG_ENABLE: 1
-      PHP_XDEBUG_REMOTE_PORT: 9003
-      PHP_XDEBUG_REMOTE_HOST: 172.25.248.1
+      PHP_XDEBUG_ENABLE: 0
       PHP_IDE_CONFIG: "serverName=laravel-app"
     working_dir: /var/www
     volumes:
